@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id                  String               @id @default(uuid())
+  name                String
+  date                String
+  time                String?
+  venue               String
+  organizer           String
+  college             String
+  description         String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  participants        Participant[]
+  certificateTemplate CertificateTemplate?
+}
+
+model CertificateTemplate {
+  id        String          @id @default(uuid())
+  eventId   String          @unique
+  event     Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fileUrl   String
+  width     Int?
+  height    Int?
+  fields    TemplateField[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model TemplateField {
+  id          String              @id @default(uuid())
+  templateId  String
+  template    CertificateTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  name        String
+  excelColumn String
+  x           Float
+  y           Float
+  width       Float?
+  height      Float?
+  fontSize    Int
+  fontFamily  String
+  fontWeight  String
+  color       String
+  align       String
+  transform   String?
+  letterSpacing Float?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model Participant {
+  id              String        @id @default(uuid())
+  eventId         String
+  event           Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sNo             Int?
+  name            String
+  email           String
+  eventText       String?       // mapped from excel
+  certificateType String?
+  department      String?
+  year            String?
+  status          String        @default("Valid") // Valid, Invalid
+  isGenerated     Boolean       @default(false)
+  certificate     Certificate?
+  emailLog        EmailLog?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Certificate {
+  id            String      @id @default(uuid())
+  participantId String      @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  fileUrl       String
+  generatedAt   DateTime    @default(now())
+}
+
+model EmailLog {
+  id            String      @id @default(uuid())
+  participantId String      @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  status        String      // Sent, Failed
+  error         String?
+  sentAt        DateTime    @default(now())
+}
