@@ -11,6 +11,9 @@ export default function EmailCenter() {
   const [progress, setProgress] = useState(0);
   const [participants, setParticipants] = useState<any[]>([]);
   const [emailStatus, setEmailStatus] = useState<Record<string, { status: 'sent' | 'failed', time: string }>>({});
+  const [eventName, setEventName] = useState('IDEAFEST 2026');
+  const [subject, setSubject] = useState('Your Certificate – {Event}');
+  const [body, setBody] = useState('Dear {Name},\n\nThank you for participating in {Event} organized by the Electrical Club.\n\nPlease find your certificate attached to this email.\n\nRegards,\nElectrical Club\nVSB Engineering College');
   
   const sentCount = Object.values(emailStatus).filter(s => s.status === 'sent').length;
   const failedCount = Object.values(emailStatus).filter(s => s.status === 'failed').length;
@@ -28,6 +31,13 @@ export default function EmailCenter() {
     }
     const savedTemplate = localStorage.getItem(`template_${id}`);
     const savedFields = localStorage.getItem(`fields_${id}`);
+    const savedEvents = JSON.parse(localStorage.getItem('events') || '[]');
+    const event = savedEvents.find((e: any) => e.id === id);
+    if (event) {
+      setEventName(event.name);
+      setSubject(`Your Certificate – ${event.name}`);
+      setBody(`Dear {Name},\n\nThank you for participating in ${event.name} organized by the Electrical Club.\n\nPlease find your certificate attached to this email.\n\nRegards,\nElectrical Club\nVSB Engineering College`);
+    }
     if (savedTemplate) setTemplate(savedTemplate);
     if (savedFields) setFields(JSON.parse(savedFields));
   }, [id]);
@@ -81,8 +91,8 @@ export default function EmailCenter() {
           body: JSON.stringify({
             email: p.email,
             name: p.name,
-            subject: `Your Certificate – IDEAFEST 2026`,
-            body: `Dear ${p.name},\n\nThank you for participating in IDEAFEST 2026 organized by the Electrical Club.\n\nPlease find your certificate attached to this email.\n\nRegards,\nElectrical Club\nVSB Engineering College`,
+            subject: subject.replace(/{Event}/g, eventName),
+            body: body.replace(/{Name}/g, p.name).replace(/{Event}/g, eventName),
             imageData
           })
         });
@@ -219,7 +229,8 @@ export default function EmailCenter() {
                 <label className="block text-xs font-medium text-slate-400 mb-1">Subject</label>
                 <input
                   type="text"
-                  defaultValue="Your Certificate – {Event}"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm"
                 />
               </div>
@@ -227,7 +238,8 @@ export default function EmailCenter() {
                 <label className="block text-xs font-medium text-slate-400 mb-1">Body</label>
                 <textarea
                   rows={8}
-                  defaultValue="Dear {Name},\n\nThank you for participating in {Event} organized by the Electrical Club.\n\nPlease find your certificate attached to this email.\n\nRegards,\nElectrical Club\nVSB Engineering College"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm"
                 />
               </div>

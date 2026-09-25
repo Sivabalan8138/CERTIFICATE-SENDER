@@ -13,11 +13,15 @@ export default function Generate() {
   const [template, setTemplate] = useState<string | null>(null);
   const [fields, setFields] = useState<any[]>([]);
   const [participants, setParticipants] = useState<any[]>([]);
+  const [eventName, setEventName] = useState('IDEAFEST 2026');
 
   useEffect(() => {
     const savedTemplate = localStorage.getItem(`template_${id}`);
     const savedFields = localStorage.getItem(`fields_${id}`);
     const savedParticipants = localStorage.getItem(`participants_${id}`);
+    const savedEvents = JSON.parse(localStorage.getItem('events') || '[]');
+    const event = savedEvents.find((e: any) => e.id === id);
+    if (event) setEventName(event.name);
     if (savedTemplate) setTemplate(savedTemplate);
     if (savedFields) setFields(JSON.parse(savedFields));
     if (savedParticipants) setParticipants(JSON.parse(savedParticipants));
@@ -68,7 +72,7 @@ export default function Generate() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
           <p className="text-sm text-slate-400 mb-1">Selected Event</p>
-          <p className="text-lg font-semibold text-white">IDEAFEST 2026</p>
+          <p className="text-lg font-semibold text-white">{eventName}</p>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
           <p className="text-sm text-slate-400 mb-1">Template</p>
@@ -137,7 +141,7 @@ export default function Generate() {
                     <div className="absolute inset-4 border-2 border-slate-200 p-8 text-center flex flex-col justify-center">
                       <h1 className="text-3xl font-serif text-slate-800 mb-8">CERTIFICATE OF PARTICIPATION</h1>
                       <h2 className="text-4xl font-bold text-slate-900 mb-4">ARUN KUMAR</h2>
-                      <h3 className="text-2xl font-bold text-brand-accent mb-8">IDEAFEST 2026</h3>
+                      <h3 className="text-2xl font-bold text-brand-accent mb-8">{eventName}</h3>
                     </div>
                   )}
                   {template && fields.map((field) => (
