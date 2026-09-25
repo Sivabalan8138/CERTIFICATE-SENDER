@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Users, Award, Mail, Edit, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Events() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {

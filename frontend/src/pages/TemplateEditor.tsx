@@ -146,7 +146,7 @@ export default function TemplateEditor() {
                   position={{ x: field.x, y: field.y }}
                   size={{ width: field.width || 300, height: 'auto' }}
                   onDragStop={(_, d) => updateField(field.id, { x: d.x, y: d.y })}
-                  onResizeStop={(e, dir, ref, delta, position) => {
+                  onResizeStop={(_e, _dir, ref, _delta, position) => {
                     updateField(field.id, {
                       width: parseInt(ref.style.width, 10),
                       x: position.x,
